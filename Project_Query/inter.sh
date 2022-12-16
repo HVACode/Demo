@@ -19,26 +19,34 @@ function menu {
 
 function ChooseQueryFile {
 	# 输出文件列表
-	if [ ${#filename} -ne 0 ]; then
-		echo "query file for the moment: " $filename
-	fi
+	while [ 1 ]; do
+		if [ ${#filename} -ne 0 ]; then
+			echo "query file for the moment: " $filename
+		fi
 
-	index=0
-	array=()
+		index=0
+		array=()
 
-	for file in $filesDir/*; do
-		if test -f $file; then
-			echo $(($index + 1))". "$file
-			array[++index]=$file
-			#index = $(($index + 1))
+		for file in $filesDir/*; do
+			if test -f $file; then
+				echo $(($index + 1))". "$file
+				array[++index]=$file
+				#index = $(($index + 1))
+			fi
+		done
+
+		# 读取选择
+		read -n1 -p "[Name the file]:" filenameIdx
+		echo
+		filename=${array[$filenameIdx]}
+		echo "file '"$filename"' has been selected"
+
+		read -n1 -p "[Are you sure(y for yes)]:" doubleCheck
+
+		if [ $doubleCheck = "y" ]; then
+			break
 		fi
 	done
-
-	# 读取选择
-	read -n1 -p "[Name the file]:" filenameIdx
-	echo
-	filename=${array[$filenameIdx]}
-	echo "file '"$filename"' has been selected"
 }
 
 function Query {
@@ -55,16 +63,13 @@ function Query {
 	args=($query)
 	IFS="$oldIFS"
 
-	echo "....."${args[0]}
-	sleep 3
-
 	#根据参数个数调用可执行程序
-	if [ ${#args} -eq 1 ]; then
-		$(query $filename ${args[0]})
-	elif [ ${#args} -eq 2 ]; then
-		$(query $filename ${args[0]} ${args[1]}})
-	elif [ ${#args} -eq 3 ]; then
-		$(query $filename ${args[0]} ${args[1]} ${args[2]}})
+	if [ ${#args[@]} -eq 1 ]; then
+		./query $filename ${args[0]}
+	elif [ ${#args[@]} -eq 2 ]; then
+		./query $filename ${args[0]} ${args[1]}
+	elif [ ${#args[@]} -eq 3 ]; then
+		./query $filename ${args[0]} ${args[1]} ${args[2]}
 	fi
 }
 
@@ -76,7 +81,10 @@ while [ 1 ]; do
 		;;
 	2)
 		Query
-		sleep 3
+		read -n1 -p "Continue( y for yes )" t
+		if [ $t != "y" ]; then
+			break
+		fi
 		;;
 	3)
 		break
