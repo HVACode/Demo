@@ -19,12 +19,4 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#define error_check(falsereturn, returnval, funcname, errnum)                  \
-	{                                                                      \
-		if (falsereturn == returnval)                                  \
-		{                                                              \
-			printf("%s failed: %s\n", funcname, strerror(errnum)); \
-		}                                                              \
-	}
 
-#endif
